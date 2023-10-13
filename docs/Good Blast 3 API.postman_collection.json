@@ -1,0 +1,1383 @@
+{
+	"info": {
+		"_postman_id": "8fd79c5e-0a50-42f3-95f2-2f0824f8ad6f",
+		"name": "Good Blast 3 API",
+		"description": "This API provides endpoints for user and tournament related functionality. A summary of these functions are divided in three categories; `User`, `Tournament`, and `Group`.\n\n- `User` : Endpoints for user creation, updating progress, entering tournaments, and claiming rewards.\n- `Tournament`: Endpoints for providing tournament related information (e.g. leaderboards)\n- `Group`: Participants of a tournament are divided into groups. This helps a lot in terms of scalability, because user fetches only their related group when it comes to updating progress or seeing group-based leaderboard. The `Get Group` endpoint is created for debugging.\n    \n\nBelow are descriptions of these endpoints. Please refer to their examples under the navigation bar on left hand side for API response structures.\n\n## User API\n\n- `Get User`: Returns a user's information\n- `Get All Users`: A list of all user's information, not intended to be used in prod, but helps debugging.\n- `Get Leaderboard of User's Group`: Since a tournament is divided in groups and we want to see the leaderboard of the user's participated group, this endpoint provides a list of users with their tournament scores for a specific group.\n- `Create User`: Creates a user based on the request body.\n- `Enter Tournament`: Tries to put the user in a group for this tournament. If there is no group available, the user is put in a new group. If the user does not satisfy entrance requirements, a related message will be sent in response body (i.e. insufficient funds, minimum level)\n- `Claim Reward`: Gives away the reward to the user for the given tournament. If no reward is earned, no changes will be made.\n    \n\n## Tournament API\n\n- `Get Tournament`: Returns a tournament's information.\n    \n- `Get Country Leaderboard`: Returns the leaderboard for the given country in a **completed** tournament. If the tournament is not completed, it returns a Bad Request error. Every day's tournament is completed at 7 AM next morning via a batch job.\n    \n- `Get Global Leaderboard`: Calls the same function with `Get Country Leaderboard` with `ALL` value in `countryCode`\n    \n\n## Group API\n\n- `Get Group`: A debugging endpoint that returns group details.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30390778"
+	},
+	"item": [
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Get User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user/{{userID}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"{{userID}}"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": [
+						{
+							"name": "Example - 200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/{{userID}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"{{userID}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:07:24 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "273"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"684b096e-1852-4635-bcfc-2416c38f054a\",\n    \"username\": \"MikaylaMacias#62\",\n    \"gameLevel\": 33,\n    \"coins\": 7000,\n    \"tournaments\": {\n        \"2023-10-12\": {\n            \"groupID\": 1,\n            \"rewardClaimed\": false\n        }\n    },\n    \"country\": \"TUR\"\n}"
+						},
+						{
+							"name": "Example - 404",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/{{userID}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"{{userID}}"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:06:14 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "41"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"User does not exist.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get All Users",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user/all",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"all"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": [
+						{
+							"name": "Example - 200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/all",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"all"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:07:11 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"id\": \"684b096e-1852-4635-bcfc-2416c38f054a\",\n        \"username\": \"MikaylaMacias#62\",\n        \"gameLevel\": 33,\n        \"coins\": 7000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"b33640ea-79b9-46d7-9aac-045da38c30fe\",\n        \"username\": \"EastonEstrada#25\",\n        \"gameLevel\": 31,\n        \"coins\": 4900,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"a0ebd88c-7135-401e-b0b5-09a88b00b084\",\n        \"username\": \"MariannaSingleton#36\",\n        \"gameLevel\": 99,\n        \"coins\": 6000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"2e5fed47-ce52-4128-bfca-ed7a4759a1b5\",\n        \"username\": \"LarryBlankenship#97\",\n        \"gameLevel\": 73,\n        \"coins\": 2900,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"3947ee5a-b028-4879-a99c-d9b7fc2e6499\",\n        \"username\": \"EmmalynnLim#41\",\n        \"gameLevel\": 56,\n        \"coins\": 2900,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"969653eb-731e-4f84-97a7-d6eccf1bc59f\",\n        \"username\": \"DevinBlankenship#99\",\n        \"gameLevel\": 11,\n        \"coins\": 4600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"eb286498-18ae-4007-9dbd-abc4e0733675\",\n        \"username\": \"RemingtonLim#15\",\n        \"gameLevel\": 31,\n        \"coins\": 6900,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"d509555e-6d5c-45e6-ba3f-898098c7f193\",\n        \"username\": \"VeraHoward#28\",\n        \"gameLevel\": 71,\n        \"coins\": 1500,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"39d35e98-0341-4f7c-ab87-a0b3f421647c\",\n        \"username\": \"DevinOwen#67\",\n        \"gameLevel\": 88,\n        \"coins\": 5800,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"ec8feeeb-5249-4093-b238-558fc707ea2d\",\n        \"username\": \"BrianaWalls#64\",\n        \"gameLevel\": 38,\n        \"coins\": 8300,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"3ee0f65c-b206-4b33-b907-cec56d18f41a\",\n        \"username\": \"AyleenPatel#34\",\n        \"gameLevel\": 69,\n        \"coins\": 1800,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"3d801fd6-ade6-427f-895c-755903dc7086\",\n        \"username\": \"DeandrePatel#54\",\n        \"gameLevel\": 98,\n        \"coins\": 8500,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"fefaf80d-ca7d-4c26-8d81-29170c42d548\",\n        \"username\": \"JaxPatel#28\",\n        \"gameLevel\": 21,\n        \"coins\": 4200,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"4fa1de75-6a74-4ce4-8f48-a13d25ce317e\",\n        \"username\": \"WessonJordan#82\",\n        \"gameLevel\": 59,\n        \"coins\": 5600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"9f344fb3-2250-4fb8-bfd9-ed940892d41a\",\n        \"username\": \"SawyerBurke#87\",\n        \"gameLevel\": 81,\n        \"coins\": 1100,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"cfca2f17-8613-4e20-92f7-a6e93f871798\",\n        \"username\": \"RosaleeGallegos#68\",\n        \"gameLevel\": 82,\n        \"coins\": 7400,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"404eb3cb-99da-4919-923e-cd9096a32020\",\n        \"username\": \"AyleenRosales#65\",\n        \"gameLevel\": 36,\n        \"coins\": 5400,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"39e23766-a237-404a-a71b-272a718daf9a\",\n        \"username\": \"VeraFerguson#5\",\n        \"gameLevel\": 67,\n        \"coins\": 7500,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"0ae25df3-69b4-441c-9a47-03b80dda4dcc\",\n        \"username\": \"CohenEstrada#28\",\n        \"gameLevel\": 42,\n        \"coins\": 8100,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"45ecc50d-c0cc-4f43-8a9f-e0a1c2596894\",\n        \"username\": \"VeraLim#52\",\n        \"gameLevel\": 28,\n        \"coins\": 4800,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"3625e5fe-e2c3-44ee-96b3-3f923ed2bcba\",\n        \"username\": \"AyleenBlankenship#82\",\n        \"gameLevel\": 57,\n        \"coins\": 1600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"84a9478e-687f-4082-90de-dda360b14674\",\n        \"username\": \"EastonSingleton#35\",\n        \"gameLevel\": 17,\n        \"coins\": 7200,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"99b57956-3126-41e3-a593-bc3819b834ad\",\n        \"username\": \"GiavannaHoward#70\",\n        \"gameLevel\": 37,\n        \"coins\": 5400,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"855cbd5b-dd20-4794-b7ba-72831f9ab306\",\n        \"username\": \"VeraTrejo#97\",\n        \"gameLevel\": 25,\n        \"coins\": 3300,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"46aae4bf-951f-407e-973c-8e66a35d14e1\",\n        \"username\": \"JulianaCortez#92\",\n        \"gameLevel\": 43,\n        \"coins\": 9300,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"77adf156-3e9e-4d5d-be8e-b8cc842921a4\",\n        \"username\": \"MorganReed#70\",\n        \"gameLevel\": 23,\n        \"coins\": 6400,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"5390f12f-ef45-4768-8503-597c6f20702d\",\n        \"username\": \"CohenWang#3\",\n        \"gameLevel\": 85,\n        \"coins\": 5400,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"a11038ba-0b31-4bb4-ab9d-308f7d9068ce\",\n        \"username\": \"WilderWalls#45\",\n        \"gameLevel\": 77,\n        \"coins\": 1200,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"ab2979bd-c8c5-4086-a9fc-ea16a233a538\",\n        \"username\": \"MariannaEstrada#79\",\n        \"gameLevel\": 79,\n        \"coins\": 2500,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"3a59833b-25ba-4d60-9c60-ff798907ea4e\",\n        \"username\": \"KieranHoward#78\",\n        \"gameLevel\": 74,\n        \"coins\": 9100,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"1cdc15e5-5047-4497-8f8a-61d0774922ce\",\n        \"username\": \"MalaysiaPatel#29\",\n        \"gameLevel\": 50,\n        \"coins\": 1500,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"4d2f3f7b-22c9-4cda-8799-f998e73d2881\",\n        \"username\": \"WessonChurch#50\",\n        \"gameLevel\": 83,\n        \"coins\": 9500,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"aa9ca2ab-4547-495b-9968-cd3106896d43\",\n        \"username\": \"MorganMcCarthy#14\",\n        \"gameLevel\": 12,\n        \"coins\": 1200,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"c3615b38-d90b-40a3-b642-fee9f6f4a21d\",\n        \"username\": \"AronBurke#66\",\n        \"gameLevel\": 11,\n        \"coins\": 1600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"8f0e4682-81ca-448f-b43f-49bf02b0b069\",\n        \"username\": \"RosaleeBauer#43\",\n        \"gameLevel\": 16,\n        \"coins\": 2900,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"216a6bfd-9f69-4871-ab93-4e10e5748ee7\",\n        \"username\": \"GiavannaGallegos#40\",\n        \"gameLevel\": 80,\n        \"coins\": 1800,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"0874de43-925e-48fb-a006-3ef3869583b7\",\n        \"username\": \"RemingtonReed#47\",\n        \"gameLevel\": 18,\n        \"coins\": 7000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"c1811c4c-72c9-4d88-bf2c-307b355fbee7\",\n        \"username\": \"MorganFerguson#45\",\n        \"gameLevel\": 47,\n        \"coins\": 8100,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"21c228ba-2d0b-4a76-a008-13fcca3eaeb4\",\n        \"username\": \"MiguelHowell#28\",\n        \"gameLevel\": 31,\n        \"coins\": 3000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"79b51e5b-3849-4d87-a8b6-ae2f04209595\",\n        \"username\": \"MckennaFerguson#99\",\n        \"gameLevel\": 81,\n        \"coins\": 8000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"de863647-a373-4846-a708-50fa4696d83c\",\n        \"username\": \"WessonGallegos#27\",\n        \"gameLevel\": 92,\n        \"coins\": 9700,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"5f66f0ce-9aba-4258-b498-994f15de9a5c\",\n        \"username\": \"JeremiahCorona#87\",\n        \"gameLevel\": 80,\n        \"coins\": 9000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"5ab91ef7-5361-448e-ad05-c0a359c397bd\",\n        \"username\": \"ParkerHo#45\",\n        \"gameLevel\": 57,\n        \"coins\": 2400,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"101da7da-1628-4b22-a1cd-bd4a34b0317c\",\n        \"username\": \"BrianaBlankenship#62\",\n        \"gameLevel\": 56,\n        \"coins\": 8000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"280bedc7-5289-4997-98b7-14b04bed8399\",\n        \"username\": \"WilderRosales#90\",\n        \"gameLevel\": 98,\n        \"coins\": 1600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"9e92533b-ca82-4c37-9ea6-152c818b2503\",\n        \"username\": \"DevinCortez#88\",\n        \"gameLevel\": 68,\n        \"coins\": 9100,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"a0a26197-61f0-4998-8236-5546a9033e4c\",\n        \"username\": \"MorganBurke#95\",\n        \"gameLevel\": 47,\n        \"coins\": 1300,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"44a853ce-439c-4cad-8e9d-9e0aef0903fb\",\n        \"username\": \"AdalynnBurke#74\",\n        \"gameLevel\": 53,\n        \"coins\": 2000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"49034e32-cafe-41e2-a4a7-e423167662e6\",\n        \"username\": \"MariannaFerguson#93\",\n        \"gameLevel\": 93,\n        \"coins\": 7800,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"3035c4fb-cbee-4551-bf11-8415f8be95b9\",\n        \"username\": \"ParkerHoward#30\",\n        \"gameLevel\": 85,\n        \"coins\": 8300,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"e84fa5f1-cd5b-48fc-bcd1-2afe24b2573f\",\n        \"username\": \"AyleenHo#77\",\n        \"gameLevel\": 15,\n        \"coins\": 8900,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"666ec5e0-3a1e-4e25-8036-7c7bfd6468e4\",\n        \"username\": \"AronPatel#83\",\n        \"gameLevel\": 92,\n        \"coins\": 8100,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"4c0662f9-553f-421a-aa03-2d7c68137898\",\n        \"username\": \"MckennaWang#13\",\n        \"gameLevel\": 94,\n        \"coins\": 2900,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"e5da95e4-1c83-4042-b819-d798c7c507da\",\n        \"username\": \"MckennaPatel#57\",\n        \"gameLevel\": 44,\n        \"coins\": 7800,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"61643cdf-dfb5-4fe2-a4a3-5481eb2df21c\",\n        \"username\": \"JulianaSingleton#11\",\n        \"gameLevel\": 59,\n        \"coins\": 3600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"0bd3ee28-3fd2-489a-a083-44cc777e1e81\",\n        \"username\": \"SawyerJordan#97\",\n        \"gameLevel\": 34,\n        \"coins\": 2600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"7de58a6d-1515-4cde-a617-c2abfceb9651\",\n        \"username\": \"WessonTrejo#57\",\n        \"gameLevel\": 27,\n        \"coins\": 7200,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"976ad952-16e0-48f1-a706-9b50471b64e0\",\n        \"username\": \"WessonDickson#20\",\n        \"gameLevel\": 85,\n        \"coins\": 8000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"3d587edd-6e3f-4cbb-9f53-8e47db60f2d5\",\n        \"username\": \"ParkerWinters#62\",\n        \"gameLevel\": 92,\n        \"coins\": 7900,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"f65cd0cb-56af-46ad-a1f0-f63063fb2269\",\n        \"username\": \"MorganBurke#90\",\n        \"gameLevel\": 70,\n        \"coins\": 8600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"551a6095-0f8c-4eec-be2d-6d10a8cb9636\",\n        \"username\": \"SawyerEstrada#79\",\n        \"gameLevel\": 55,\n        \"coins\": 8400,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"4f2f1f3f-7a07-447b-8628-1258748646b2\",\n        \"username\": \"BrianaSingleton#18\",\n        \"gameLevel\": 27,\n        \"coins\": 7600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"06df7596-fd48-438f-b27c-91ed42597d46\",\n        \"username\": \"AronFerguson#54\",\n        \"gameLevel\": 96,\n        \"coins\": 8600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"ce5c4d4a-d595-4b20-a235-aca0ee546faa\",\n        \"username\": \"VeraWalls#11\",\n        \"gameLevel\": 31,\n        \"coins\": 8700,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"17219fca-2ab8-45f5-9b13-431a6d14ba64\",\n        \"username\": \"DeandreBurke#68\",\n        \"gameLevel\": 52,\n        \"coins\": 7500,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"d6b56f37-f86b-44b5-98e1-b12a69c067ff\",\n        \"username\": \"GiavannaWang#9\",\n        \"gameLevel\": 10,\n        \"coins\": 6800,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"46ed8d06-fb2f-45dc-acf8-61372692f238\",\n        \"username\": \"JaxWinters#99\",\n        \"gameLevel\": 32,\n        \"coins\": 8600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"3f339fcb-31a9-4ac7-95fe-c84249720758\",\n        \"username\": \"MiguelHo#14\",\n        \"gameLevel\": 46,\n        \"coins\": 8700,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"03b36542-f545-468e-a69f-b2dc7bba3ae9\",\n        \"username\": \"JulianaHood#51\",\n        \"gameLevel\": 28,\n        \"coins\": 8700,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"107c40fc-f563-4c9f-a2bf-a1d76a4cc198\",\n        \"username\": \"AronHood#4\",\n        \"gameLevel\": 16,\n        \"coins\": 6000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"9425295a-dd78-4940-b87c-e09aa984ec64\",\n        \"username\": \"ZaynPrince#38\",\n        \"gameLevel\": 14,\n        \"coins\": 9600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"00b542ae-d983-4053-8081-8183755f0f4d\",\n        \"username\": \"MorganHo#59\",\n        \"gameLevel\": 98,\n        \"coins\": 6700,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"cd49b575-5bd4-4656-9b5e-42e0c5713847\",\n        \"username\": \"MalaysiaChurch#31\",\n        \"gameLevel\": 35,\n        \"coins\": 2700,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"3bcec3ca-d1ff-4c9b-98ac-c3732413baac\",\n        \"username\": \"EmmalynnChurch#10\",\n        \"gameLevel\": 82,\n        \"coins\": 3600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"7452022d-33b7-4c89-a51e-020376c4bba3\",\n        \"username\": \"ParkerPrince#60\",\n        \"gameLevel\": 59,\n        \"coins\": 9400,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"b3ffd384-e821-4cec-a5dc-3329a47790cb\",\n        \"username\": \"AronWinters#94\",\n        \"gameLevel\": 66,\n        \"coins\": 4100,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"cce89d17-f590-4bda-9a04-fd7f879a6879\",\n        \"username\": \"JeremiahWinters#77\",\n        \"gameLevel\": 58,\n        \"coins\": 8900,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"892e4f7f-a317-4c7d-b302-8cb618b66a5a\",\n        \"username\": \"BrianaReed#32\",\n        \"gameLevel\": 10,\n        \"coins\": 2300,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"b0cf0017-83fb-41e6-8432-1d093a84f17d\",\n        \"username\": \"SawyerGallegos#24\",\n        \"gameLevel\": 32,\n        \"coins\": 1500,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"af4ee276-c4d5-412b-9838-cc4992b4829a\",\n        \"username\": \"JaxHowell#31\",\n        \"gameLevel\": 38,\n        \"coins\": 9400,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"62fc3f1d-f906-429c-8619-7fe0b980e1b5\",\n        \"username\": \"GiavannaBurke#63\",\n        \"gameLevel\": 17,\n        \"coins\": 7700,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"4c2473db-9ed2-4914-8a51-f907eba52696\",\n        \"username\": \"MikaylaEstrada#54\",\n        \"gameLevel\": 44,\n        \"coins\": 1900,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"f7cc7434-cdee-49d2-83ff-859c0ce52d2c\",\n        \"username\": \"RosaleeChurch#24\",\n        \"gameLevel\": 96,\n        \"coins\": 4400,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"fbb28bb8-bfdf-4e5f-819c-da7448cbc3ea\",\n        \"username\": \"GiavannaRosales#86\",\n        \"gameLevel\": 16,\n        \"coins\": 5700,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"990fb230-62c2-421a-9ba0-d5d00aedcdd7\",\n        \"username\": \"AronPrince#13\",\n        \"gameLevel\": 46,\n        \"coins\": 5800,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"2fb9fa6b-87eb-4b09-aed6-6a64cb1a7e75\",\n        \"username\": \"MckennaFerguson#49\",\n        \"gameLevel\": 33,\n        \"coins\": 6200,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"567b5d77-2d98-4dcf-8397-1a286ff89a24\",\n        \"username\": \"JulianaHo#64\",\n        \"gameLevel\": 87,\n        \"coins\": 4900,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"aad15db3-946b-4ac0-ba21-1cbdd9a455de\",\n        \"username\": \"EastonHood#95\",\n        \"gameLevel\": 84,\n        \"coins\": 7300,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"a447fe85-eb20-4294-a943-28858eb62167\",\n        \"username\": \"GiavannaBlankenship#74\",\n        \"gameLevel\": 34,\n        \"coins\": 1000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"32b5244f-a7da-4bf2-883d-50c307c4ef7a\",\n        \"username\": \"MiguelCorona#50\",\n        \"gameLevel\": 29,\n        \"coins\": 6700,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"f93fbfc9-6cd2-41ee-9d44-c64ed159adc7\",\n        \"username\": \"RemingtonWang#42\",\n        \"gameLevel\": 47,\n        \"coins\": 5300,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"3c5fce2c-6400-4500-b89b-0e8a54fe1fa0\",\n        \"username\": \"KieranWang#78\",\n        \"gameLevel\": 67,\n        \"coins\": 4600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"81a3ad82-5261-43fe-a4ad-4a9668bd5b46\",\n        \"username\": \"RemingtonOwen#23\",\n        \"gameLevel\": 93,\n        \"coins\": 1000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"c87d3337-4d93-426a-9a45-bf62be5ba8d0\",\n        \"username\": \"LarryPrince#34\",\n        \"gameLevel\": 55,\n        \"coins\": 4400,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"7c18430b-e74d-4136-a147-484d6761eb66\",\n        \"username\": \"MckennaBurke#56\",\n        \"gameLevel\": 85,\n        \"coins\": 7800,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"eb839137-c319-40d0-9295-36e4f2971653\",\n        \"username\": \"RosaleeJordan#81\",\n        \"gameLevel\": 53,\n        \"coins\": 6200,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 2,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"a32dc124-420f-4aa0-a162-326a6b065c46\",\n        \"username\": \"WilderJordan#75\",\n        \"gameLevel\": 59,\n        \"coins\": 5000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"TUR\"\n    },\n    {\n        \"id\": \"1090b393-fdf0-4f48-ba2d-82f3c01ddd06\",\n        \"username\": \"AyleenHood#93\",\n        \"gameLevel\": 21,\n        \"coins\": 4400,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"7d7cb875-b4f8-4ad8-86c0-cf41ea9770a5\",\n        \"username\": \"RemingtonWinters#58\",\n        \"gameLevel\": 54,\n        \"coins\": 5600,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 1,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    },\n    {\n        \"id\": \"d4ce6bf5-ed16-4a37-977e-554242872878\",\n        \"username\": \"AdalynnWinters#63\",\n        \"gameLevel\": 12,\n        \"coins\": 7000,\n        \"tournaments\": {\n            \"2023-10-12\": {\n                \"groupID\": 3,\n                \"rewardClaimed\": false\n            }\n        },\n        \"country\": \"US\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "Get Leaderboard of User's Group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user/{{userID}}/tournament/{{tournamentID}}/leaderboard",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"{{userID}}",
+								"tournament",
+								"{{tournamentID}}",
+								"leaderboard"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": [
+						{
+							"name": "Example - 200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/{{userID}}/tournament/{{tournamentID}}/leaderboard",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"{{userID}}",
+										"tournament",
+										"{{tournamentID}}",
+										"leaderboard"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:07:56 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"userID\": \"9e92533b-ca82-4c37-9ea6-152c818b2503\",\n        \"score\": 4,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"9425295a-dd78-4940-b87c-e09aa984ec64\",\n        \"score\": 4,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"06df7596-fd48-438f-b27c-91ed42597d46\",\n        \"score\": 3,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"1090b393-fdf0-4f48-ba2d-82f3c01ddd06\",\n        \"score\": 3,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"666ec5e0-3a1e-4e25-8036-7c7bfd6468e4\",\n        \"score\": 3,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"39e23766-a237-404a-a71b-272a718daf9a\",\n        \"score\": 3,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"551a6095-0f8c-4eec-be2d-6d10a8cb9636\",\n        \"score\": 3,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"af4ee276-c4d5-412b-9838-cc4992b4829a\",\n        \"score\": 3,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"ec8feeeb-5249-4093-b238-558fc707ea2d\",\n        \"score\": 3,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"ce5c4d4a-d595-4b20-a235-aca0ee546faa\",\n        \"score\": 2,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"32b5244f-a7da-4bf2-883d-50c307c4ef7a\",\n        \"score\": 2,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"280bedc7-5289-4997-98b7-14b04bed8399\",\n        \"score\": 2,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"5390f12f-ef45-4768-8503-597c6f20702d\",\n        \"score\": 2,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"0ae25df3-69b4-441c-9a47-03b80dda4dcc\",\n        \"score\": 2,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"ab2979bd-c8c5-4086-a9fc-ea16a233a538\",\n        \"score\": 2,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"976ad952-16e0-48f1-a706-9b50471b64e0\",\n        \"score\": 2,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"45ecc50d-c0cc-4f43-8a9f-e0a1c2596894\",\n        \"score\": 2,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"99b57956-3126-41e3-a593-bc3819b834ad\",\n        \"score\": 2,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"892e4f7f-a317-4c7d-b302-8cb618b66a5a\",\n        \"score\": 2,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"3d801fd6-ade6-427f-895c-755903dc7086\",\n        \"score\": 2,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"7de58a6d-1515-4cde-a617-c2abfceb9651\",\n        \"score\": 2,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"21c228ba-2d0b-4a76-a008-13fcca3eaeb4\",\n        \"score\": 1,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"855cbd5b-dd20-4794-b7ba-72831f9ab306\",\n        \"score\": 1,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"4c0662f9-553f-421a-aa03-2d7c68137898\",\n        \"score\": 1,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"990fb230-62c2-421a-9ba0-d5d00aedcdd7\",\n        \"score\": 1,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"cd49b575-5bd4-4656-9b5e-42e0c5713847\",\n        \"score\": 1,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"3f339fcb-31a9-4ac7-95fe-c84249720758\",\n        \"score\": 1,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"684b096e-1852-4635-bcfc-2416c38f054a\",\n        \"score\": 1,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"b33640ea-79b9-46d7-9aac-045da38c30fe\",\n        \"score\": 1,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"3947ee5a-b028-4879-a99c-d9b7fc2e6499\",\n        \"score\": 1,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"d6b56f37-f86b-44b5-98e1-b12a69c067ff\",\n        \"score\": 1,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"7d7cb875-b4f8-4ad8-86c0-cf41ea9770a5\",\n        \"score\": 1,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"03b36542-f545-468e-a69f-b2dc7bba3ae9\",\n        \"score\": 1,\n        \"country\": \"US\"\n    },\n    {\n        \"userID\": \"3625e5fe-e2c3-44ee-96b3-3f923ed2bcba\",\n        \"score\": 0,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"969653eb-731e-4f84-97a7-d6eccf1bc59f\",\n        \"score\": 0,\n        \"country\": \"TUR\"\n    },\n    {\n        \"userID\": \"17219fca-2ab8-45f5-9b13-431a6d14ba64\",\n        \"score\": 0,\n        \"country\": \"US\"\n    }\n]"
+						},
+						{
+							"name": "Example - 404",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/{{userID}}/tournament/{{tournamentID}}/leaderboard",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"{{userID}}",
+										"tournament",
+										"{{tournamentID}}",
+										"leaderboard"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:09:39 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "34"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Not found\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Create User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"username\": \"JohnDoe#001\",\n    \"country\": \"TUR\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": [
+						{
+							"name": "Example - 201",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"username\": \"JohnDoe#001\",\n    \"country\": \"TUR\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:12:53 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "169"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"65eec51e-b7b1-45c8-b25a-4e9cc92cf69a\",\n    \"username\": \"JohnDoe#001\",\n    \"gameLevel\": 1,\n    \"coins\": 3000,\n    \"tournaments\": null,\n    \"country\": \"TUR\"\n}"
+						},
+						{
+							"name": "Example - 400",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"username\": \"Jo\",\n    \"country\": \"TUR\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user"
+									]
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:13:10 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "65"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Username must contain at least 3 characters.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Enter Tournament",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/{{userID}}/tournament/{{tournamentID}}/enter",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"{{userID}}",
+								"tournament",
+								"{{tournamentID}}",
+								"enter"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": [
+						{
+							"name": "Example - 403 (1)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/{{userID}}/tournament/{{tournamentID}}/enter",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"{{userID}}",
+										"tournament",
+										"{{tournamentID}}",
+										"enter"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 07:11:12 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "64"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"This tournament has already been completed.\"\n}"
+						},
+						{
+							"name": "Example - 403 (2)",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/{{userID}}/tournament/{{tournamentID}}/enter",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"{{userID}}",
+										"tournament",
+										"{{tournamentID}}",
+										"enter"
+									]
+								}
+							},
+							"status": "Forbidden",
+							"code": 403,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:15:02 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "49"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"User must be above level 10.\"\n}"
+						},
+						{
+							"name": "Example - 200",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/{{userID}}/tournament/{{tournamentID}}/enter",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"{{userID}}",
+										"tournament",
+										"{{tournamentID}}",
+										"enter"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:16:01 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "0"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "Update User Progress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Successful POST request\", function () {",
+									"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/user/{{userID}}/progress",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"{{userID}}",
+								"progress"
+							]
+						},
+						"description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+					},
+					"response": [
+						{
+							"name": "Example - 200",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/{{userID}}/progress",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"{{userID}}",
+										"progress"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:16:23 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "0"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Example - 404",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/user/{{userID}}/progress",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"{{userID}}",
+										"progress"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:16:37 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "22"
+								}
+							],
+							"cookie": [],
+							"body": "\"User does not exist.\""
+						}
+					]
+				},
+				{
+					"name": "Claim Reward",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/user/{{userID}}/tournament/{{tournamentID}}/claim-reward",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"user",
+								"{{userID}}",
+								"tournament",
+								"{{tournamentID}}",
+								"claim-reward"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": [
+						{
+							"name": "Example - 200",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/{{userID}}/tournament/{{tournamentID}}/claim-reward",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"{{userID}}",
+										"tournament",
+										"{{tournamentID}}",
+										"claim-reward"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:11:49 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "40"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Claimed 5000 coins!\"\n}"
+						},
+						{
+							"name": "Example - 304",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/{{userID}}/tournament/{{tournamentID}}/claim-reward",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"{{userID}}",
+										"tournament",
+										"{{tournamentID}}",
+										"claim-reward"
+									]
+								}
+							},
+							"status": "Not Modified",
+							"code": 304,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:11:17 GMT"
+								}
+							],
+							"cookie": [],
+							"body": null
+						},
+						{
+							"name": "Example - 404",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/user/{{userID}}/tournament/{{tournamentID}}/claim-reward",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"user",
+										"{{userID}}",
+										"tournament",
+										"{{tournamentID}}",
+										"claim-reward"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:10:37 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "30"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Not found\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Tournament",
+			"item": [
+				{
+					"name": "Get Tournament",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tournament/{{tournamentID}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tournament",
+								"{{tournamentID}}"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": [
+						{
+							"name": "Example - 200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/tournament/{{tournamentID}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"tournament",
+										"{{tournamentID}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:17:18 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"id\": \"2023-10-12\",\n    \"leaderboards\": {\n        \"ALL\": [\n            \"9425295a-dd78-4940-b87c-e09aa984ec64\",\n            \"3a59833b-25ba-4d60-9c60-ff798907ea4e\",\n            \"3ee0f65c-b206-4b33-b907-cec56d18f41a\",\n            \"404eb3cb-99da-4919-923e-cd9096a32020\",\n            \"8f0e4682-81ca-448f-b43f-49bf02b0b069\",\n            \"4f2f1f3f-7a07-447b-8628-1258748646b2\",\n            \"9e92533b-ca82-4c37-9ea6-152c818b2503\",\n            \"3bcec3ca-d1ff-4c9b-98ac-c3732413baac\",\n            \"a11038ba-0b31-4bb4-ab9d-308f7d9068ce\",\n            \"551a6095-0f8c-4eec-be2d-6d10a8cb9636\",\n            \"9f344fb3-2250-4fb8-bfd9-ed940892d41a\",\n            \"06df7596-fd48-438f-b27c-91ed42597d46\",\n            \"a0a26197-61f0-4998-8236-5546a9033e4c\",\n            \"ec8feeeb-5249-4093-b238-558fc707ea2d\",\n            \"a32dc124-420f-4aa0-a162-326a6b065c46\",\n            \"666ec5e0-3a1e-4e25-8036-7c7bfd6468e4\",\n            \"af4ee276-c4d5-412b-9838-cc4992b4829a\",\n            \"61643cdf-dfb5-4fe2-a4a3-5481eb2df21c\",\n            \"c3615b38-d90b-40a3-b642-fee9f6f4a21d\",\n            \"eb839137-c319-40d0-9295-36e4f2971653\",\n            \"1090b393-fdf0-4f48-ba2d-82f3c01ddd06\",\n            \"39d35e98-0341-4f7c-ab87-a0b3f421647c\",\n            \"39e23766-a237-404a-a71b-272a718daf9a\",\n            \"81a3ad82-5261-43fe-a4ad-4a9668bd5b46\",\n            \"cfca2f17-8613-4e20-92f7-a6e93f871798\",\n            \"32b5244f-a7da-4bf2-883d-50c307c4ef7a\",\n            \"7de58a6d-1515-4cde-a617-c2abfceb9651\",\n            \"ce5c4d4a-d595-4b20-a235-aca0ee546faa\",\n            \"45ecc50d-c0cc-4f43-8a9f-e0a1c2596894\",\n            \"3d801fd6-ade6-427f-895c-755903dc7086\",\n            \"99b57956-3126-41e3-a593-bc3819b834ad\",\n            \"b0cf0017-83fb-41e6-8432-1d093a84f17d\",\n            \"976ad952-16e0-48f1-a706-9b50471b64e0\",\n            \"0ae25df3-69b4-441c-9a47-03b80dda4dcc\",\n            \"4fa1de75-6a74-4ce4-8f48-a13d25ce317e\",\n            \"280bedc7-5289-4997-98b7-14b04bed8399\",\n            \"77adf156-3e9e-4d5d-be8e-b8cc842921a4\",\n            \"f65cd0cb-56af-46ad-a1f0-f63063fb2269\",\n            \"84a9478e-687f-4082-90de-dda360b14674\",\n            \"3d587edd-6e3f-4cbb-9f53-8e47db60f2d5\",\n            \"892e4f7f-a317-4c7d-b302-8cb618b66a5a\",\n            \"0bd3ee28-3fd2-489a-a083-44cc777e1e81\",\n            \"d509555e-6d5c-45e6-ba3f-898098c7f193\",\n            \"4c2473db-9ed2-4914-8a51-f907eba52696\",\n            \"e5da95e4-1c83-4042-b819-d798c7c507da\",\n            \"b3ffd384-e821-4cec-a5dc-3329a47790cb\",\n            \"49034e32-cafe-41e2-a4a7-e423167662e6\",\n            \"107c40fc-f563-4c9f-a2bf-a1d76a4cc198\",\n            \"ab2979bd-c8c5-4086-a9fc-ea16a233a538\",\n            \"2e5fed47-ce52-4128-bfca-ed7a4759a1b5\",\n            \"5390f12f-ef45-4768-8503-597c6f20702d\",\n            \"46ed8d06-fb2f-45dc-acf8-61372692f238\",\n            \"e84fa5f1-cd5b-48fc-bcd1-2afe24b2573f\",\n            \"4c0662f9-553f-421a-aa03-2d7c68137898\",\n            \"7d7cb875-b4f8-4ad8-86c0-cf41ea9770a5\",\n            \"fbb28bb8-bfdf-4e5f-819c-da7448cbc3ea\",\n            \"79b51e5b-3849-4d87-a8b6-ae2f04209595\",\n            \"21c228ba-2d0b-4a76-a008-13fcca3eaeb4\",\n            \"101da7da-1628-4b22-a1cd-bd4a34b0317c\",\n            \"3c5fce2c-6400-4500-b89b-0e8a54fe1fa0\",\n            \"de863647-a373-4846-a708-50fa4696d83c\",\n            \"990fb230-62c2-421a-9ba0-d5d00aedcdd7\",\n            \"3035c4fb-cbee-4551-bf11-8415f8be95b9\",\n            \"c1811c4c-72c9-4d88-bf2c-307b355fbee7\",\n            \"5ab91ef7-5361-448e-ad05-c0a359c397bd\",\n            \"aad15db3-946b-4ac0-ba21-1cbdd9a455de\",\n            \"4d2f3f7b-22c9-4cda-8799-f998e73d2881\",\n            \"1cdc15e5-5047-4497-8f8a-61d0774922ce\",\n            \"aa9ca2ab-4547-495b-9968-cd3106896d43\",\n            \"62fc3f1d-f906-429c-8619-7fe0b980e1b5\",\n            \"46aae4bf-951f-407e-973c-8e66a35d14e1\",\n            \"cce89d17-f590-4bda-9a04-fd7f879a6879\",\n            \"3f339fcb-31a9-4ac7-95fe-c84249720758\",\n            \"855cbd5b-dd20-4794-b7ba-72831f9ab306\",\n            \"00b542ae-d983-4053-8081-8183755f0f4d\",\n            \"216a6bfd-9f69-4871-ab93-4e10e5748ee7\",\n            \"03b36542-f545-468e-a69f-b2dc7bba3ae9\",\n            \"cd49b575-5bd4-4656-9b5e-42e0c5713847\",\n            \"3947ee5a-b028-4879-a99c-d9b7fc2e6499\",\n            \"684b096e-1852-4635-bcfc-2416c38f054a\",\n            \"d6b56f37-f86b-44b5-98e1-b12a69c067ff\",\n            \"b33640ea-79b9-46d7-9aac-045da38c30fe\",\n            \"0874de43-925e-48fb-a006-3ef3869583b7\",\n            \"f93fbfc9-6cd2-41ee-9d44-c64ed159adc7\",\n            \"d4ce6bf5-ed16-4a37-977e-554242872878\",\n            \"3625e5fe-e2c3-44ee-96b3-3f923ed2bcba\",\n            \"2fb9fa6b-87eb-4b09-aed6-6a64cb1a7e75\",\n            \"c87d3337-4d93-426a-9a45-bf62be5ba8d0\",\n            \"7c18430b-e74d-4136-a147-484d6761eb66\",\n            \"5f66f0ce-9aba-4258-b498-994f15de9a5c\",\n            \"a447fe85-eb20-4294-a943-28858eb62167\",\n            \"969653eb-731e-4f84-97a7-d6eccf1bc59f\",\n            \"fefaf80d-ca7d-4c26-8d81-29170c42d548\",\n            \"eb286498-18ae-4007-9dbd-abc4e0733675\",\n            \"567b5d77-2d98-4dcf-8397-1a286ff89a24\",\n            \"44a853ce-439c-4cad-8e9d-9e0aef0903fb\",\n            \"7452022d-33b7-4c89-a51e-020376c4bba3\",\n            \"17219fca-2ab8-45f5-9b13-431a6d14ba64\",\n            \"f7cc7434-cdee-49d2-83ff-859c0ce52d2c\",\n            \"a0ebd88c-7135-401e-b0b5-09a88b00b084\"\n        ],\n        \"TUR\": [\n            \"3a59833b-25ba-4d60-9c60-ff798907ea4e\",\n            \"8f0e4682-81ca-448f-b43f-49bf02b0b069\",\n            \"a11038ba-0b31-4bb4-ab9d-308f7d9068ce\",\n            \"551a6095-0f8c-4eec-be2d-6d10a8cb9636\",\n            \"9f344fb3-2250-4fb8-bfd9-ed940892d41a\",\n            \"a32dc124-420f-4aa0-a162-326a6b065c46\",\n            \"61643cdf-dfb5-4fe2-a4a3-5481eb2df21c\",\n            \"c3615b38-d90b-40a3-b642-fee9f6f4a21d\",\n            \"eb839137-c319-40d0-9295-36e4f2971653\",\n            \"39e23766-a237-404a-a71b-272a718daf9a\",\n            \"7de58a6d-1515-4cde-a617-c2abfceb9651\",\n            \"45ecc50d-c0cc-4f43-8a9f-e0a1c2596894\",\n            \"3d801fd6-ade6-427f-895c-755903dc7086\",\n            \"99b57956-3126-41e3-a593-bc3819b834ad\",\n            \"77adf156-3e9e-4d5d-be8e-b8cc842921a4\",\n            \"f65cd0cb-56af-46ad-a1f0-f63063fb2269\",\n            \"84a9478e-687f-4082-90de-dda360b14674\",\n            \"3d587edd-6e3f-4cbb-9f53-8e47db60f2d5\",\n            \"0bd3ee28-3fd2-489a-a083-44cc777e1e81\",\n            \"d509555e-6d5c-45e6-ba3f-898098c7f193\",\n            \"49034e32-cafe-41e2-a4a7-e423167662e6\",\n            \"107c40fc-f563-4c9f-a2bf-a1d76a4cc198\",\n            \"2e5fed47-ce52-4128-bfca-ed7a4759a1b5\",\n            \"5390f12f-ef45-4768-8503-597c6f20702d\",\n            \"4c0662f9-553f-421a-aa03-2d7c68137898\",\n            \"fbb28bb8-bfdf-4e5f-819c-da7448cbc3ea\",\n            \"79b51e5b-3849-4d87-a8b6-ae2f04209595\",\n            \"21c228ba-2d0b-4a76-a008-13fcca3eaeb4\",\n            \"990fb230-62c2-421a-9ba0-d5d00aedcdd7\",\n            \"3035c4fb-cbee-4551-bf11-8415f8be95b9\",\n            \"c1811c4c-72c9-4d88-bf2c-307b355fbee7\",\n            \"4d2f3f7b-22c9-4cda-8799-f998e73d2881\",\n            \"aa9ca2ab-4547-495b-9968-cd3106896d43\",\n            \"62fc3f1d-f906-429c-8619-7fe0b980e1b5\",\n            \"46aae4bf-951f-407e-973c-8e66a35d14e1\",\n            \"cce89d17-f590-4bda-9a04-fd7f879a6879\",\n            \"216a6bfd-9f69-4871-ab93-4e10e5748ee7\",\n            \"3947ee5a-b028-4879-a99c-d9b7fc2e6499\",\n            \"684b096e-1852-4635-bcfc-2416c38f054a\",\n            \"d6b56f37-f86b-44b5-98e1-b12a69c067ff\",\n            \"f93fbfc9-6cd2-41ee-9d44-c64ed159adc7\",\n            \"3625e5fe-e2c3-44ee-96b3-3f923ed2bcba\",\n            \"c87d3337-4d93-426a-9a45-bf62be5ba8d0\",\n            \"7c18430b-e74d-4136-a147-484d6761eb66\",\n            \"5f66f0ce-9aba-4258-b498-994f15de9a5c\",\n            \"969653eb-731e-4f84-97a7-d6eccf1bc59f\",\n            \"7452022d-33b7-4c89-a51e-020376c4bba3\",\n            \"f7cc7434-cdee-49d2-83ff-859c0ce52d2c\"\n        ],\n        \"US\": [\n            \"9425295a-dd78-4940-b87c-e09aa984ec64\",\n            \"3ee0f65c-b206-4b33-b907-cec56d18f41a\",\n            \"404eb3cb-99da-4919-923e-cd9096a32020\",\n            \"4f2f1f3f-7a07-447b-8628-1258748646b2\",\n            \"9e92533b-ca82-4c37-9ea6-152c818b2503\",\n            \"3bcec3ca-d1ff-4c9b-98ac-c3732413baac\",\n            \"06df7596-fd48-438f-b27c-91ed42597d46\",\n            \"a0a26197-61f0-4998-8236-5546a9033e4c\",\n            \"ec8feeeb-5249-4093-b238-558fc707ea2d\",\n            \"666ec5e0-3a1e-4e25-8036-7c7bfd6468e4\",\n            \"af4ee276-c4d5-412b-9838-cc4992b4829a\",\n            \"1090b393-fdf0-4f48-ba2d-82f3c01ddd06\",\n            \"39d35e98-0341-4f7c-ab87-a0b3f421647c\",\n            \"81a3ad82-5261-43fe-a4ad-4a9668bd5b46\",\n            \"cfca2f17-8613-4e20-92f7-a6e93f871798\",\n            \"32b5244f-a7da-4bf2-883d-50c307c4ef7a\",\n            \"ce5c4d4a-d595-4b20-a235-aca0ee546faa\",\n            \"b0cf0017-83fb-41e6-8432-1d093a84f17d\",\n            \"976ad952-16e0-48f1-a706-9b50471b64e0\",\n            \"0ae25df3-69b4-441c-9a47-03b80dda4dcc\",\n            \"4fa1de75-6a74-4ce4-8f48-a13d25ce317e\",\n            \"280bedc7-5289-4997-98b7-14b04bed8399\",\n            \"892e4f7f-a317-4c7d-b302-8cb618b66a5a\",\n            \"4c2473db-9ed2-4914-8a51-f907eba52696\",\n            \"e5da95e4-1c83-4042-b819-d798c7c507da\",\n            \"b3ffd384-e821-4cec-a5dc-3329a47790cb\",\n            \"ab2979bd-c8c5-4086-a9fc-ea16a233a538\",\n            \"46ed8d06-fb2f-45dc-acf8-61372692f238\",\n            \"e84fa5f1-cd5b-48fc-bcd1-2afe24b2573f\",\n            \"7d7cb875-b4f8-4ad8-86c0-cf41ea9770a5\",\n            \"101da7da-1628-4b22-a1cd-bd4a34b0317c\",\n            \"3c5fce2c-6400-4500-b89b-0e8a54fe1fa0\",\n            \"de863647-a373-4846-a708-50fa4696d83c\",\n            \"5ab91ef7-5361-448e-ad05-c0a359c397bd\",\n            \"aad15db3-946b-4ac0-ba21-1cbdd9a455de\",\n            \"1cdc15e5-5047-4497-8f8a-61d0774922ce\",\n            \"3f339fcb-31a9-4ac7-95fe-c84249720758\",\n            \"855cbd5b-dd20-4794-b7ba-72831f9ab306\",\n            \"00b542ae-d983-4053-8081-8183755f0f4d\",\n            \"03b36542-f545-468e-a69f-b2dc7bba3ae9\",\n            \"cd49b575-5bd4-4656-9b5e-42e0c5713847\",\n            \"b33640ea-79b9-46d7-9aac-045da38c30fe\",\n            \"0874de43-925e-48fb-a006-3ef3869583b7\",\n            \"d4ce6bf5-ed16-4a37-977e-554242872878\",\n            \"2fb9fa6b-87eb-4b09-aed6-6a64cb1a7e75\",\n            \"a447fe85-eb20-4294-a943-28858eb62167\",\n            \"fefaf80d-ca7d-4c26-8d81-29170c42d548\",\n            \"eb286498-18ae-4007-9dbd-abc4e0733675\",\n            \"567b5d77-2d98-4dcf-8397-1a286ff89a24\",\n            \"44a853ce-439c-4cad-8e9d-9e0aef0903fb\",\n            \"17219fca-2ab8-45f5-9b13-431a6d14ba64\",\n            \"a0ebd88c-7135-401e-b0b5-09a88b00b084\"\n        ]\n    },\n    \"completed\": true\n}"
+						},
+						{
+							"name": "Example - 404",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/tournament/{{tournamentID}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"tournament",
+										"{{tournamentID}}"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:21:00 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "47"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Tournament does not exist.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Country Leaderboard",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tournament/{{tournamentID}}/leaderboard/TUR",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tournament",
+								"{{tournamentID}}",
+								"leaderboard",
+								"TUR"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": [
+						{
+							"name": "Example - 200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/tournament/{{tournamentID}}/leaderboard/TUR",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"tournament",
+										"{{tournamentID}}",
+										"leaderboard",
+										"TUR"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:22:12 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    \"471a215a-29dc-476a-a933-7ba2516b258f\",\n    \"b8737fe9-9379-467b-bda1-75f3d17a2154\",\n    \"af8a9f03-fd2d-47f4-9d63-a6be33207376\",\n    \"3dab59f5-f9c7-4870-ba8d-596b8ff0f785\",\n    \"83b127b2-d288-4ed4-b752-caccf78835e3\",\n    \"80384970-4594-4598-9ee0-121fd7cae23d\",\n    \"34ed40d7-aa22-44f6-9e38-296f1e4d2051\",\n    \"010410f4-a7a4-4312-b9ff-052ca3acf6a8\",\n    \"d098b0b6-d65d-4dbd-bd67-4d5fcb06b78a\",\n    \"c4efe113-0e63-41a9-a3a8-68b0b121b3a0\",\n    \"0eec2376-d146-4327-aa3c-b272c41ba044\",\n    \"729d0cda-6a8f-4e82-9fdb-a6c9bbdca482\",\n    \"72ee53d8-e54f-488e-b66d-c675c4491e9a\",\n    \"07927b9b-59ad-4aa3-afe1-e73297335f38\",\n    \"71148b4f-1501-4ca0-9de4-eb7e135f4a91\",\n    \"cfcd049b-b4a3-4b88-80b5-8c2500929e3a\",\n    \"fcefb979-9a43-4507-84a2-e3e51904625a\",\n    \"bb2d8aeb-714d-4cac-a6da-7d55c09b1518\",\n    \"79a90fd4-00c5-4fe4-b78a-b66ee7e0de9c\",\n    \"6c72f985-3474-47bd-a99f-14f1fbc08bc5\",\n    \"8639bf07-24b8-4e7b-b23e-0612b75c1fe2\",\n    \"2577c792-0905-4ca0-bd85-42fdf1ef0c83\",\n    \"be1ca0ab-3027-471b-847e-dd2cf113e50e\",\n    \"97146d7a-8afe-4212-bc57-94fabe90a2ef\",\n    \"74b4878c-c1da-4f78-afbc-e16b69469999\",\n    \"4580694b-c3ef-40f5-a3f4-3a4b1eed6118\",\n    \"cddcd515-b980-464d-9b8c-14f62b2e7d58\",\n    \"05040c75-29d8-4262-a240-a47187c45680\",\n    \"a59a2ad2-daba-4333-b9e2-3d6cf02ccdec\",\n    \"4f48d240-b09b-4751-9b08-b8dc4a3f8406\",\n    \"919b7c2b-7dad-4a29-bd25-654c4e499d77\",\n    \"c966e291-4b74-4e41-96ed-2b71a2dc9f77\",\n    \"fed34da3-02b0-43dd-a7fb-533130022982\",\n    \"faa84e23-22f7-44f9-a5db-38b016797266\",\n    \"6fea0a4f-5f1b-42d6-a660-ab29ba553ba0\",\n    \"7edc9b77-6ea9-4c8a-85ce-9a3aefaf99ef\",\n    \"6c867075-f813-4225-989f-3cfd13b000b4\",\n    \"2ac2e534-2e31-48c8-8fe1-0cb56345619a\",\n    \"bbd7401a-c13d-4a19-bc80-32ed2f2528a8\",\n    \"4e61819c-2e17-431e-82f1-e214b4946acb\",\n    \"843271dd-9d22-4e46-8e07-1fe4de7db20d\",\n    \"549786ea-bc1a-4cc5-ae1e-b766ed4c6bc5\",\n    \"73aeb10c-ed79-48eb-9b54-8d0aa8c4cf1f\",\n    \"503130b5-7336-4589-8f33-dfb851d7ad06\",\n    \"349537f0-e924-4c32-8819-07eac189cc73\",\n    \"b73dd4a3-8082-4238-98fd-aa13ad4e804f\",\n    \"7214084e-5343-4c1c-82ee-bfea052590e1\",\n    \"f1df4938-dc57-44d7-8750-5e00e4b1e028\",\n    \"c2809d0b-90a1-41c8-ae82-be6431ca8426\"\n]"
+						},
+						{
+							"name": "Example - 404",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/tournament/{{tournamentID}}/leaderboard/TUR",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"tournament",
+										"{{tournamentID}}",
+										"leaderboard",
+										"TUR"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:21:22 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "47"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Tournament does not exist.\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Get Global Leaderboard",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tournament/{{tournamentID}}/leaderboard/ALL",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tournament",
+								"{{tournamentID}}",
+								"leaderboard",
+								"ALL"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": [
+						{
+							"name": "Example - 200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/tournament/{{tournamentID}}/leaderboard/ALL",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"tournament",
+										"{{tournamentID}}",
+										"leaderboard",
+										"ALL"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:21:54 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    \"471a215a-29dc-476a-a933-7ba2516b258f\",\n    \"3c7bb6ba-9471-45d5-b148-d18ec4baa3b0\",\n    \"5e78a789-3eae-4447-99c6-f86338e6f4aa\",\n    \"b8737fe9-9379-467b-bda1-75f3d17a2154\",\n    \"fe72fe5a-8be4-40be-bed2-4c6ef7b7165a\",\n    \"5f37a97d-f8b6-4e77-bcee-65ab41c38ddd\",\n    \"2bb1e010-1574-477f-a488-a44121d45dda\",\n    \"af8a9f03-fd2d-47f4-9d63-a6be33207376\",\n    \"de63829b-9a91-4cbf-a5a5-f7d47692e47a\",\n    \"3dab59f5-f9c7-4870-ba8d-596b8ff0f785\",\n    \"83b127b2-d288-4ed4-b752-caccf78835e3\",\n    \"80384970-4594-4598-9ee0-121fd7cae23d\",\n    \"34ed40d7-aa22-44f6-9e38-296f1e4d2051\",\n    \"010410f4-a7a4-4312-b9ff-052ca3acf6a8\",\n    \"96b05242-a6fa-49df-8f7b-428a6c6fd75a\",\n    \"d098b0b6-d65d-4dbd-bd67-4d5fcb06b78a\",\n    \"cd223bdd-2976-475c-a629-b73a048d1439\",\n    \"7fc9706e-04dd-4532-8809-7ffe797df9a8\",\n    \"c4efe113-0e63-41a9-a3a8-68b0b121b3a0\",\n    \"0eec2376-d146-4327-aa3c-b272c41ba044\",\n    \"0ba6c8b3-9a44-4d2d-8043-e726b1e91b37\",\n    \"2d23a24a-2a4d-414a-8236-d33250a0ad76\",\n    \"9605df69-cbd9-40b4-b857-74ebe3d63fd5\",\n    \"729d0cda-6a8f-4e82-9fdb-a6c9bbdca482\",\n    \"5d81a6bc-be9d-4a31-b370-0cdcaeefb4cb\",\n    \"72ee53d8-e54f-488e-b66d-c675c4491e9a\",\n    \"e54c7cd3-989e-44bb-a34f-632982dedc50\",\n    \"997e8801-0244-46e1-af7d-07e15b4fc4e6\",\n    \"07927b9b-59ad-4aa3-afe1-e73297335f38\",\n    \"71148b4f-1501-4ca0-9de4-eb7e135f4a91\",\n    \"cfcd049b-b4a3-4b88-80b5-8c2500929e3a\",\n    \"fcefb979-9a43-4507-84a2-e3e51904625a\",\n    \"bb2d8aeb-714d-4cac-a6da-7d55c09b1518\",\n    \"79a90fd4-00c5-4fe4-b78a-b66ee7e0de9c\",\n    \"6c72f985-3474-47bd-a99f-14f1fbc08bc5\",\n    \"8639bf07-24b8-4e7b-b23e-0612b75c1fe2\",\n    \"2577c792-0905-4ca0-bd85-42fdf1ef0c83\",\n    \"b2966451-203a-40d2-adf4-acd24a9f517e\",\n    \"480545d6-3591-4e96-a46a-65c940a47dc8\",\n    \"be1ca0ab-3027-471b-847e-dd2cf113e50e\",\n    \"97146d7a-8afe-4212-bc57-94fabe90a2ef\",\n    \"74b4878c-c1da-4f78-afbc-e16b69469999\",\n    \"18eba2eb-f040-4ab0-a7ea-730cd94d2440\",\n    \"01888466-f222-4d5b-8a97-e215647483c6\",\n    \"4580694b-c3ef-40f5-a3f4-3a4b1eed6118\",\n    \"c091fefc-9bef-48b0-8e16-1e8243351fa6\",\n    \"50816b47-7b23-4bd7-880e-90246383dd16\",\n    \"c358f62c-11b9-4d9f-8d27-2847b6994148\",\n    \"ddbbb80b-17b2-45a0-9d0a-661b180901ea\",\n    \"cddcd515-b980-464d-9b8c-14f62b2e7d58\",\n    \"1d9ef787-c8f9-48a7-b7c7-7083c9de4d26\",\n    \"05040c75-29d8-4262-a240-a47187c45680\",\n    \"a59a2ad2-daba-4333-b9e2-3d6cf02ccdec\",\n    \"7709c9b0-fe5b-418f-8e1e-6af373fe1645\",\n    \"4f48d240-b09b-4751-9b08-b8dc4a3f8406\",\n    \"dff53a23-4432-4ef1-a692-70f608a5b843\",\n    \"84fb4cea-fd0a-4702-b88b-9e7e91b4e94f\",\n    \"507b1e91-8805-4df5-b3eb-a1b080320681\",\n    \"919b7c2b-7dad-4a29-bd25-654c4e499d77\",\n    \"3ee1d807-4985-45b4-b903-1beb6674edb7\",\n    \"d474b1e6-1001-42f1-9bf9-bc019e1e89df\",\n    \"4a6aeeac-92f3-4f16-bb22-11049afe5706\",\n    \"c966e291-4b74-4e41-96ed-2b71a2dc9f77\",\n    \"7309161d-c915-43b7-b777-8f6d7a493bf4\",\n    \"494cf029-9c44-4452-acb6-ca9822fa721d\",\n    \"fed34da3-02b0-43dd-a7fb-533130022982\",\n    \"eefed706-f0c9-4a59-8e86-1da1324a1c4e\",\n    \"4ec596ab-eeec-420e-8fd3-5b201771b9b7\",\n    \"ace25d45-b580-4b10-b9e3-cb424de77acd\",\n    \"faa84e23-22f7-44f9-a5db-38b016797266\",\n    \"40773be8-46f0-482d-9d11-194a04e149e3\",\n    \"6fea0a4f-5f1b-42d6-a660-ab29ba553ba0\",\n    \"4329cf34-775a-4e15-a2b3-9dc8fccccde9\",\n    \"e39aa9eb-51b1-46df-abae-8e6dc3b828ff\",\n    \"9e92d7e4-9795-4465-bf34-0e942dad0bcc\",\n    \"7edc9b77-6ea9-4c8a-85ce-9a3aefaf99ef\",\n    \"6c867075-f813-4225-989f-3cfd13b000b4\",\n    \"3297a6db-35a7-4886-80b5-525a75b23d16\",\n    \"2ac2e534-2e31-48c8-8fe1-0cb56345619a\",\n    \"bbd7401a-c13d-4a19-bc80-32ed2f2528a8\",\n    \"cb971397-89a1-4286-ab27-3b782c55dfaa\",\n    \"4e61819c-2e17-431e-82f1-e214b4946acb\",\n    \"843271dd-9d22-4e46-8e07-1fe4de7db20d\",\n    \"549786ea-bc1a-4cc5-ae1e-b766ed4c6bc5\",\n    \"a1fb7868-2c68-4b98-931a-6c8f63d077f9\",\n    \"b5888f4c-acaf-4f0d-921b-5fd721fd93d9\",\n    \"73aeb10c-ed79-48eb-9b54-8d0aa8c4cf1f\",\n    \"22b97050-915a-4d9f-899c-aa89e6db4cf9\",\n    \"503130b5-7336-4589-8f33-dfb851d7ad06\",\n    \"349537f0-e924-4c32-8819-07eac189cc73\",\n    \"8b68fc67-f56b-4034-8fb8-8253fe62b1ae\",\n    \"b73dd4a3-8082-4238-98fd-aa13ad4e804f\",\n    \"7214084e-5343-4c1c-82ee-bfea052590e1\",\n    \"05ebdcc3-344d-44ef-944f-193f9d409ec3\",\n    \"c5085768-e531-4e27-93fe-993f086edebe\",\n    \"09ae5d2e-3b11-4d8d-bbfd-9f0f3a33a2ff\",\n    \"f1df4938-dc57-44d7-8750-5e00e4b1e028\",\n    \"b36844c0-524c-4fd4-b752-694437c5c34f\",\n    \"e3bbc3b5-e861-4694-adfb-982ec9053fea\",\n    \"c2809d0b-90a1-41c8-ae82-be6431ca8426\"\n]"
+						},
+						{
+							"name": "Example - 404",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/tournament/{{tournamentID}}/leaderboard/ALL",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"tournament",
+										"{{tournamentID}}",
+										"leaderboard",
+										"ALL"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:21:36 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "47"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Tournament does not exist.\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Group",
+			"item": [
+				{
+					"name": "Get Group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/group/{{tournamentID}}/{{groupID}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group",
+								"{{tournamentID}}",
+								"{{groupID}}"
+							]
+						},
+						"description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+					},
+					"response": [
+						{
+							"name": "Example - 200",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/group/{{tournamentID}}/{{groupID}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"group",
+										"{{tournamentID}}",
+										"{{groupID}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:22:49 GMT"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"tournamentID\": \"2023-10-12\",\n    \"groupID\": 1,\n    \"players\": [\n        {\n            \"userID\": \"e39aa9eb-51b1-46df-abae-8e6dc3b828ff\",\n            \"score\": 1,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"71148b4f-1501-4ca0-9de4-eb7e135f4a91\",\n            \"score\": 2,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"e3bbc3b5-e861-4694-adfb-982ec9053fea\",\n            \"score\": 0,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"f1df4938-dc57-44d7-8750-5e00e4b1e028\",\n            \"score\": 0,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"83b127b2-d288-4ed4-b752-caccf78835e3\",\n            \"score\": 3,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"729d0cda-6a8f-4e82-9fdb-a6c9bbdca482\",\n            \"score\": 2,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"be1ca0ab-3027-471b-847e-dd2cf113e50e\",\n            \"score\": 2,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"0eec2376-d146-4327-aa3c-b272c41ba044\",\n            \"score\": 3,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"c5085768-e531-4e27-93fe-993f086edebe\",\n            \"score\": 0,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"05ebdcc3-344d-44ef-944f-193f9d409ec3\",\n            \"score\": 0,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"471a215a-29dc-476a-a933-7ba2516b258f\",\n            \"score\": 4,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"8639bf07-24b8-4e7b-b23e-0612b75c1fe2\",\n            \"score\": 2,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"34ed40d7-aa22-44f6-9e38-296f1e4d2051\",\n            \"score\": 3,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"79a90fd4-00c5-4fe4-b78a-b66ee7e0de9c\",\n            \"score\": 2,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"8b68fc67-f56b-4034-8fb8-8253fe62b1ae\",\n            \"score\": 0,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"84fb4cea-fd0a-4702-b88b-9e7e91b4e94f\",\n            \"score\": 1,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"18eba2eb-f040-4ab0-a7ea-730cd94d2440\",\n            \"score\": 1,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"7fc9706e-04dd-4532-8809-7ffe797df9a8\",\n            \"score\": 3,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"494cf029-9c44-4452-acb6-ca9822fa721d\",\n            \"score\": 1,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"4329cf34-775a-4e15-a2b3-9dc8fccccde9\",\n            \"score\": 1,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"c2809d0b-90a1-41c8-ae82-be6431ca8426\",\n            \"score\": 0,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"07927b9b-59ad-4aa3-afe1-e73297335f38\",\n            \"score\": 2,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"9605df69-cbd9-40b4-b857-74ebe3d63fd5\",\n            \"score\": 2,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"7edc9b77-6ea9-4c8a-85ce-9a3aefaf99ef\",\n            \"score\": 0,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"503130b5-7336-4589-8f33-dfb851d7ad06\",\n            \"score\": 0,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"2d23a24a-2a4d-414a-8236-d33250a0ad76\",\n            \"score\": 2,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"2ac2e534-2e31-48c8-8fe1-0cb56345619a\",\n            \"score\": 0,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"997e8801-0244-46e1-af7d-07e15b4fc4e6\",\n            \"score\": 2,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"eefed706-f0c9-4a59-8e86-1da1324a1c4e\",\n            \"score\": 1,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"843271dd-9d22-4e46-8e07-1fe4de7db20d\",\n            \"score\": 0,\n            \"country\": \"TUR\"\n        },\n        {\n            \"userID\": \"96b05242-a6fa-49df-8f7b-428a6c6fd75a\",\n            \"score\": 3,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"4a6aeeac-92f3-4f16-bb22-11049afe5706\",\n            \"score\": 1,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"a1fb7868-2c68-4b98-931a-6c8f63d077f9\",\n            \"score\": 0,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"507b1e91-8805-4df5-b3eb-a1b080320681\",\n            \"score\": 1,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"dff53a23-4432-4ef1-a692-70f608a5b843\",\n            \"score\": 1,\n            \"country\": \"US\"\n        },\n        {\n            \"userID\": \"a59a2ad2-daba-4333-b9e2-3d6cf02ccdec\",\n            \"score\": 1,\n            \"country\": \"TUR\"\n        }\n    ]\n}"
+						},
+						{
+							"name": "Example - 404",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/group/{{tournamentID}}/{{groupID}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"group",
+										"{{tournamentID}}",
+										"{{groupID}}"
+									]
+								}
+							},
+							"status": "Not Found",
+							"code": 404,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Fri, 13 Oct 2023 09:23:09 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "30"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"message\": \"Not found\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8080"
+		},
+		{
+			"key": "userID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tournamentID",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "groupID",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

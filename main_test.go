@@ -9,6 +9,7 @@ import (
 	"oguzhanakan0/good-blast-api/api"
 	"oguzhanakan0/good-blast-api/config"
 	"oguzhanakan0/good-blast-api/structs"
+	"os"
 	"testing"
 	"time"
 
@@ -28,8 +29,11 @@ func TestCreateUser(t *testing.T) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
-	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint("http://localhost:8000"))
-	// db := dynamodb.New(sess)
+	host := "http://localhost:8000"
+	if os.Getenv("DYNAMODB_HOST") != "" {
+		host = os.Getenv("DYNAMODB_HOST")
+	}
+	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint(host))
 	r := setupRouter()
 	r.Use(dbMiddleware(db))
 	r.POST("/user", api.CreateUser)
@@ -50,8 +54,11 @@ func TestGetUser(t *testing.T) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
-	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint("http://localhost:8000"))
-	// db := dynamodb.New(sess)
+	host := "http://localhost:8000"
+	if os.Getenv("DYNAMODB_HOST") != "" {
+		host = os.Getenv("DYNAMODB_HOST")
+	}
+	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint(host))
 	r := setupRouter()
 	r.Use(dbMiddleware(db))
 	r.POST("/user", api.CreateUser)
@@ -82,8 +89,11 @@ func TestGetUsers(t *testing.T) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
-	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint("http://localhost:8000"))
-	// db := dynamodb.New(sess)
+	host := "http://localhost:8000"
+	if os.Getenv("DYNAMODB_HOST") != "" {
+		host = os.Getenv("DYNAMODB_HOST")
+	}
+	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint(host))
 	r := setupRouter()
 	r.Use(dbMiddleware(db))
 	r.GET("/user/all", api.GetUsers)
@@ -100,8 +110,11 @@ func TestProgressUser(t *testing.T) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
-	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint("http://localhost:8000"))
-	// db := dynamodb.New(sess)
+	host := "http://localhost:8000"
+	if os.Getenv("DYNAMODB_HOST") != "" {
+		host = os.Getenv("DYNAMODB_HOST")
+	}
+	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint(host))
 	r := setupRouter()
 	r.Use(dbMiddleware(db))
 	r.POST("/user", api.CreateUser)
@@ -132,8 +145,11 @@ func TestEnterTournament(t *testing.T) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
-	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint("http://localhost:8000"))
-	// db := dynamodb.New(sess)
+	host := "http://localhost:8000"
+	if os.Getenv("DYNAMODB_HOST") != "" {
+		host = os.Getenv("DYNAMODB_HOST")
+	}
+	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint(host))
 	r := setupRouter()
 	r.Use(dbMiddleware(db))
 	r.POST("/user", api.CreateUser)
@@ -174,8 +190,11 @@ func TestGetTournament(t *testing.T) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
-	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint("http://localhost:8000"))
-	// db := dynamodb.New(sess)
+	host := "http://localhost:8000"
+	if os.Getenv("DYNAMODB_HOST") != "" {
+		host = os.Getenv("DYNAMODB_HOST")
+	}
+	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint(host))
 	r := setupRouter()
 	r.Use(dbMiddleware(db))
 	r.GET("/tournament/:id", api.GetTournament)
@@ -195,8 +214,11 @@ func TestGetTournaments(t *testing.T) {
 	sess := session.Must(session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
 	}))
-	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint("http://localhost:8000"))
-	// db := dynamodb.New(sess)
+	host := "http://localhost:8000"
+	if os.Getenv("DYNAMODB_HOST") != "" {
+		host = os.Getenv("DYNAMODB_HOST")
+	}
+	db := dynamodb.New(sess, aws.NewConfig().WithEndpoint(host))
 	r := setupRouter()
 	r.Use(dbMiddleware(db))
 	r.GET("/tournament/all", api.GetTournaments)

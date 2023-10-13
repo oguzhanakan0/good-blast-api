@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"oguzhanakan0/good-blast-api/structs"
+	"os"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -26,7 +27,11 @@ func main() {
 	if gin.Mode() == "release" {
 		db = dynamodb.New(sess)
 	} else {
-		db = dynamodb.New(sess, aws.NewConfig().WithEndpoint("http://localhost:8000"))
+		host := "http://localhost:8000"
+		if os.Getenv("DYNAMODB_HOST") != "" {
+			host = os.Getenv("DYNAMODB_HOST")
+		}
+		db = dynamodb.New(sess, aws.NewConfig().WithEndpoint(host))
 	}
 
 	out, err := t.Put(db)
