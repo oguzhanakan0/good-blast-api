@@ -3,7 +3,11 @@ Good Blast REST API
 
 ## Installation
 
-Run `docker compose up` from the root directory. A local DynamoDB will be instantiated and will be populated with sample data for demonstration purposes.
+Run 
+```
+docker compose up
+```
+A local DynamoDB will be instantiated and will be populated with sample data for demonstration purposes.
 
 Then, navigate to the [Postman Desktop Agent](https://www.postman.com/downloads/postman-agent/) and open `docs/Good Blast 3 API.postman_collection.json` file to test the API.
 
