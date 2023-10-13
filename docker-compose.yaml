@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - DYNAMODB_HOST=http://host.docker.internal:8000
+      - AWS_REGION=fake-region
+      - AWS_ACCESS_KEY_ID=fakeAccessKeyId
+      - AWS_SECRET_ACCESS_KEY=fakeSecretAccessKey
+    depends_on:
+      insert-mock-data:
+        condition: service_completed_successfully
+    links:
+      - dynamodb-local
+  insert-mock-data:
+    build: .
+    command: go run jobs/test-database/main.go
+    environment:
+      - DYNAMODB_HOST=http://host.docker.internal:8000
+      - AWS_REGION=fake-region
+      - AWS_ACCESS_KEY_ID=fakeAccessKeyId
+      - AWS_SECRET_ACCESS_KEY=fakeSecretAccessKey
+    depends_on:
+      - dynamodb-local
+    links:
+      - dynamodb-local
+  dynamodb-local:
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    image: "amazon/dynamodb-local:latest"
+    container_name: dynamodb-local
+    ports:
+      - "8000:8000"
+    volumes:
+      - "./docker/dynamodb:/home/dynamodblocal/data"
+    working_dir: /home/dynamodblocal
