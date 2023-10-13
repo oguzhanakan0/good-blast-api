@@ -11,6 +11,10 @@ A local DynamoDB will be instantiated and will be populated with sample data for
 
 Then, navigate to the [Postman Desktop Agent](https://www.postman.com/downloads/postman-agent/) and open `docs/Good Blast 3 API.postman_collection.json` file to test the API.
 
+### Postman Collection
+You can read descriptions of endpoints on welcome page when you click on **Good Blast 3 API** on the left navigation bar. You can also see **example** responses when you expand each endpoint.
+
+
 > Note: Update `Variables` to see API results for different users/tournaments. 
 
 ### Testing
