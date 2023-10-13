@@ -7,7 +7,17 @@ Run `docker compose up` from the root directory. A local DynamoDB will be instan
 
 Then, navigate to the [Postman Desktop Agent](https://www.postman.com/downloads/postman-agent/) and open `docs/Good Blast 3 API.postman_collection.json` file to test the API.
 
-> Note: You may update `Variables` to see API results for different users/tournaments. 
+> Note: Update `Variables` to see API results for different users/tournaments. 
+
+### Testing
+
+Run tests with
+```
+docker exec -it good-blast-api-web-1 go test
+```
+
+> Note: Docker images must be up and running to run the tests.
+
 
 ## Deployment
 The app is deployed in GCP Cloud Run and same endpoints can be accessed by setting `base_url` parameter to [https://good-blast-api-zfbs2ytkgq-lz.a.run.app](https://good-blast-api-zfbs2ytkgq-lz.a.run.app).

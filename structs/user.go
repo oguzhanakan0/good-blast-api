@@ -2,9 +2,7 @@ package structs
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
-	"time"
 
 	"oguzhanakan0/good-blast-api/config"
 
@@ -71,17 +69,17 @@ func (u *User) Put(db *dynamodb.DynamoDB) (*dynamodb.PutItemOutput, error) {
 }
 
 func (u *User) CanEnterTournament(t Tournament) (bool, error) {
-	if t.Completed {
-		return false, errors.New("This tournament has already been completed.")
-	} else if _, alreadyIn := u.Tournaments[t.ID]; alreadyIn {
-		return false, errors.New("User is already in the tournament.")
-	} else if u.Coins < config.TournamentCost {
-		return false, errors.New("Insufficient funds.")
-	} else if u.Level < config.TournamentMinLevel {
-		return false, errors.New(fmt.Sprintf("User must be above level %d.", config.TournamentMinLevel))
-	} else if time.Now().UTC().Hour() >= config.TournamentEnterDeadline {
-		return false, errors.New("Cannot enter the tournament in the afternoon.")
-	}
+	// if t.Completed {
+	// 	return false, errors.New("This tournament has already been completed.")
+	// } else if _, alreadyIn := u.Tournaments[t.ID]; alreadyIn {
+	// 	return false, errors.New("User is already in the tournament.")
+	// } else if u.Coins < config.TournamentCost {
+	// 	return false, errors.New("Insufficient funds.")
+	// } else if u.Level < config.TournamentMinLevel {
+	// 	return false, errors.New(fmt.Sprintf("User must be above level %d.", config.TournamentMinLevel))
+	// } else if time.Now().UTC().Hour() >= config.TournamentEnterDeadline {
+	// 	return false, errors.New("Cannot enter the tournament in the afternoon.")
+	// }
 	return true, nil
 }
 

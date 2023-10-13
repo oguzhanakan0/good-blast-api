@@ -1,6 +1,7 @@
 package api
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"oguzhanakan0/good-blast-api/config"
@@ -143,6 +144,11 @@ func EnterTournament(c *gin.Context) {
 	err := user.Fetch(db)
 	if err != nil {
 		c.IndentedJSON(http.StatusNotFound, gin.H{"message": err.Error()})
+		return
+	}
+
+	if _, ok := user.Tournaments[c.Param("tournamentID")]; ok {
+		c.IndentedJSON(http.StatusNotModified, gin.H{"message": "User already in the tournament."})
 		return
 	}
 
@@ -296,12 +302,21 @@ func ClaimReward(c *gin.Context) {
 
 func getUserLeaderboard(db *dynamodb.DynamoDB, user structs.User, tournamentID string) ([]structs.UserTournamentRecord, error) {
 	var players []structs.UserTournamentRecord
+	// Get tournament
+	tournament := structs.Tournament{ID: tournamentID}
+	err := tournament.Fetch(db)
+	if err != nil {
+		return players, err
+	}
+	if !tournament.Completed {
+		return players, errors.New("Tournament has not been completed yet.")
+	}
 	// Get group
 	group := structs.Group{
 		TournamentID: tournamentID,
 		GroupID:      user.Tournaments[tournamentID].GroupID,
 	}
-	err := group.Fetch(db)
+	err = group.Fetch(db)
 	if err != nil {
 		return players, err
 	}
