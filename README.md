@@ -1,5 +1,7 @@
 # good-blast-api
-Good Blast REST API
+Good Blast REST API - 
+
+> Good Job Games case çalışması için yapıldı.
 
 ## Installation
 
