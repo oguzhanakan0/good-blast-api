@@ -1,7 +1,7 @@
 # good-blast-api
-Good Blast REST API - 
+Good Blast REST API
 
-> Good Job Games case çalışması için yapıldı.
+Good Blast is a sample tournament API for mobile games. Every tournament starts on midnight and ends next midnight. Users are grouped into chunks and rewarded according to their ranks. A user can claim their latest rewards in the following day. Tournament API also provides endpoints for local & global leaderboards.
 
 ## Installation
 
